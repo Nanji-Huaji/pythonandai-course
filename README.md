@@ -79,11 +79,3 @@ python src/visualize_results.py
 *   **Linear 层**: 将 LSTM 输出映射到情感分类分数。
 *   **Dropout**: 防止过拟合。
 
-## 📝 课程报告与演示
-
-*   `re/` 目录下包含了项目报告的 LaTeX 源码。
-*   `beam/` 目录下包含了答辩 PPT 的 Beamer 源码。
-
-## 👥 作者
-
-*   田天一 (Tian Tianyi)
