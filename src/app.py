@@ -6,12 +6,12 @@ from model import SentimentLSTM
 import os
 
 # Page config
-st.set_page_config(page_title="IMDB Sentiment Analyzer", page_icon="🎬")
+st.set_page_config(page_title="IMDB 情感分析器", page_icon="🎬")
 
-st.title("🎬 IMDB Movie Review Sentiment Analysis")
+st.title("🎬 IMDB 影评情感分析")
 st.markdown("""
-Type a movie review below to see if it's **Positive** or **Negative**.
-The model is a Bi-Directional LSTM trained on 50,000 IMDB reviews.
+在下方输入影评以查看它是 **正面** 还是 **负面** 的。
+该模型是基于 50,000 条 IMDB 评论训练的双向 LSTM。
 """)
 
 # Setup Device
@@ -21,7 +21,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def load_resources():
     # Load Vocab
     if not os.path.exists('vocab.pt'):
-        st.error("vocab.pt not found. Please run src/train.py first.")
+        st.error("未找到 vocab.pt。请先运行 src/train.py。")
         return None, None
     
     vocab = load_vocab('vocab.pt')
@@ -39,7 +39,7 @@ def load_resources():
     
     # Load Weights
     if not os.path.exists('lstm-model.pt'):
-        st.error("lstm-model.pt not found. Please run src/train.py first.")
+        st.error("未找到 lstm-model.pt。请先运行 src/train.py。")
         return None, vocab
         
     model.load_state_dict(torch.load('lstm-model.pt', map_location=device))
@@ -71,28 +71,28 @@ def predict_sentiment(model, vocab, sentence):
     return prediction.item()
 
 # User Interface
-user_input = st.text_area("Enter your review:", "This movie was absolutely fantastic! The acting was great.")
+user_input = st.text_area("请输入您的评论:", "This movie was absolutely fantastic! The acting was great.")
 
-if st.button("Analyze Sentiment"):
+if st.button("分析情感"):
     if user_input.strip() == "":
-        st.warning("Please enter some text.")
+        st.warning("请输入一些文本。")
     else:
-        with st.spinner('Analyzing...'):
+        with st.spinner('分析中...'):
             score = predict_sentiment(model, vocab, user_input)
             
-        sentiment = "POSITIVE" if score >= 0.5 else "NEGATIVE"
+        sentiment = "正面" if score >= 0.5 else "负面"
         confidence = score if score >= 0.5 else 1 - score
         
         # Color coding
-        color = "green" if sentiment == "POSITIVE" else "red"
+        color = "green" if sentiment == "正面" else "red"
         
-        st.markdown(f"### Result: <span style='color:{color}'>{sentiment}</span>", unsafe_allow_html=True)
+        st.markdown(f"### 结果: <span style='color:{color}'>{sentiment}</span>", unsafe_allow_html=True)
         st.progress(score)
-        st.caption(f"Confidence Score: {score:.4f} (0=Neg, 1=Pos)")
+        st.caption(f"置信度分数: {score:.4f} (0=负面, 1=正面)")
         
         # Expander for details
-        with st.expander("See details"):
+        with st.expander("查看详情"):
             tokenizer = basic_english_tokenizer
             tokens = tokenizer(user_input)
-            st.write("Tokens:", tokens)
-            st.write("Raw Model Output (Sigmoid):", score)
+            st.write("分词:", tokens)
+            st.write("原始模型输出 (Sigmoid):", score)
